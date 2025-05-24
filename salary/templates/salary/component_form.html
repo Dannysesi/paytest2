@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Salary Component{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Salary Component</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ form.name.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.component_type.label_tag }}
+                <div class="form-check">
+                    {% for choice in form.component_type %}
+                    <div class="form-check">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                            {{ choice.choice_label }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.is_taxable }}
+                <label class="form-check-label" for="{{ form.is_taxable.id_for_label }}">
+                    {{ form.is_taxable.label }}
+                </label>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+                <small class="form-text text-muted">{{ form.description.help_text }}</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'component_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

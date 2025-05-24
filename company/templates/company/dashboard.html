@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Payroll System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Payroll Setup Dashboard</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Start by completing these key setup steps:</p>
+                <div class="list-group">
+                    <a href="{% url 'list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-building"></i> Complete Company Details
+                    </a>
+                    <a href="{% url 'component_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-cash-stack"></i> Manage Salary Components
+                    </a>
+                    <a href="{% url 'paygrade_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-diagram-3"></i> Create Pay Grades
+                    </a>
+                    <a href="{% url 'employees_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people"></i> Add & Manage Employees
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

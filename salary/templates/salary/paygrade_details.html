@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ paygrade.name }} Details{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>{{ paygrade.name }}</h2>
+        <span class="badge bg-{% if paygrade.is_active %}success{% else %}secondary{% endif %}">
+            {% if paygrade.is_active %}Active{% else %}Inactive{% endif %}
+        </span>
+    </div>
+    <div class="card-body">
+        <h3 class="mb-4">Salary Components</h3>
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Taxable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for component in paygrade.paygradecomponent_set.all %}
+                    <tr>
+                        <td>{{ component.component.name }}</td>
+                        <td>{{ component.component.get_component_type_display }}</td>
+                        <td>₦{{ component.amount }}</td>
+                        <td>
+                            {% if component.component.is_taxable %}
+                            <span class="badge bg-success">Yes</span>
+                            {% else %}
+                            <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No components added</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url 'paygrade_update' paygrade.pk %}" class="btn btn-primary">Edit Pay Grade</a>
+            <a href="{% url 'paygrade_list' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

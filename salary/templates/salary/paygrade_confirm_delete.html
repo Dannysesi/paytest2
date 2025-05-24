@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Pay Grade{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h2>Delete Pay Grade</h2>
+    </div>
+    <div class="card-body">
+        <p>Are you sure you want to delete "{{ object }}"?</p>
+        <p class="text-warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Warning: Employees assigned to this pay grade will lose their salary structure!
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            <a href="{% url 'paygrade_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

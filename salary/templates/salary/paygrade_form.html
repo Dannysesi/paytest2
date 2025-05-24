@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Pay Grade{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>{% if form.instance.pk %}Edit{% else %}Create{% endif %} Pay Grade</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form.name.label_tag }}
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.name.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check form-switch mt-4 pt-2">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="mb-3">Salary Components</h4>
+            
+            {{ formset.management_form }}
+            <div id="component-forms">
+                {% for form in formset %}
+                <div class="row mb-3 component-form" id="form-{{ forloop.counter0 }}">
+                    <div class="col-md-6">
+                        {{ form.component.label_tag }}
+                        {{ form.component }}
+                        {% if form.component.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.component.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.amount.label_tag }}
+                        {{ form.amount }}
+                        {% if form.amount.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.amount.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2 pt-4">
+                        {% if form.instance.pk %}
+                            {{ form.DELETE.label_tag }}
+                            {{ form.DELETE }}
+                        {% endif %}
+                        {{ form.id }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="button" id="add-more" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="bi bi-plus-circle"></i> Add Another Component
+            </button>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Save Pay Grade</button>
+                <a href="{% url 'paygrade_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formContainer = document.getElementById('component-forms');
+    const addButton = document.getElementById('add-more');
+    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    
+    // Get the last form in the container
+    const lastForm = document.querySelector('.component-form:last-child');
+    
+    // Clone the last form when "Add Another" is clicked
+    addButton.addEventListener('click', function() {
+        const formCount = parseInt(totalForms.value);
+        const newForm = lastForm.cloneNode(true);
+        
+        // Update all the IDs and names in the cloned form
+        const formRegex = /form-(\d+)-/g;
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+        
+        // Clear the values
+        const inputs = newForm.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (input.name && input.type !== 'hidden' && !input.name.includes('DELETE')) {
+                input.value = '';
+                input.removeAttribute('value');
+                
+                // Clear any existing error messages
+                const errorDiv = input.closest('.component-form').querySelector('.invalid-feedback');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+                
+                // Remove is-invalid class if present
+                input.classList.remove('is-invalid');
+            }
+        });
+        
+        // Remove any existing delete checkbox (for new forms)
+        const deleteCheckbox = newForm.querySelector('input[name$="-DELETE"]');
+        if (deleteCheckbox) {
+            deleteCheckbox.closest('.col-md-2').style.display = 'none';
+        }
+        
+        // Add to the container
+        formContainer.appendChild(newForm);
+        
+        // Update the total form count
+        totalForms.value = formCount + 1;
+    });
+});
+</script>
+{% endblock %}
