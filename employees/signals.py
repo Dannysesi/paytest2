@@ -46,7 +46,7 @@ def assign_or_update_paygrade_components(sender, instance, created, **kwargs):
 @receiver([post_save, post_delete], sender=PayGradeComponent)
 def update_employees_on_paygrade_change(sender, instance, **kwargs):
     """
-    Whenever a PayGradeComponent is added, changed, or deleted:
+    Whenever a PayGradeComponent is added changed, or deleted:
     - Update the salary components of all employees with that pay grade.
     - Rebuild their salary from the current state of the pay grade.
     """
