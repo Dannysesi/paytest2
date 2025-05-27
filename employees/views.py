@@ -28,10 +28,16 @@ class EmployeeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
-            context['components_formset'] = EmployeeSalaryComponentFormSet(self.request.POST)
+            context['components_formset'] = EmployeeSalaryComponentFormSet(
+                self.request.POST,
+                prefix='components'
+            )
         else:
-            context['components_formset'] = EmployeeSalaryComponentFormSet()
+            context['components_formset'] = EmployeeSalaryComponentFormSet(
+                prefix='components'
+            )
         return context
+
 
     def form_valid(self, form):
         context = self.get_context_data()
@@ -67,11 +73,13 @@ class EmployeeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             context['components_formset'] = EmployeeSalaryComponentFormSet(
                 self.request.POST,
                 instance=self.object,
+                prefix='components',
                 queryset=EmployeeSalaryComponent.objects.filter(employee=self.object, is_custom=True)
             )
         else:
             context['components_formset'] = EmployeeSalaryComponentFormSet(
                 instance=self.object,
+                prefix='components',
                 queryset=EmployeeSalaryComponent.objects.filter(employee=self.object, is_custom=True)
             )
         return context

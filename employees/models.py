@@ -36,8 +36,8 @@ class Employee(TimeStampedModel):
             })
 
         return components
-    
-    def calculate_payroll(self):
+
+    def calculate_dummy(self):
         from decimal import Decimal
         from django.db.models import Sum, Q
 
@@ -73,31 +73,13 @@ class Employee(TimeStampedModel):
             "deductions": deductions,
             "gross_salary": gross,
         }
-    
-    # def save(self, *args, **kwargs):
-    #     created = not self.pk
-    #     super().save(*args, **kwargs)
-        
-    #     # If new employee with pay grade, create components
-    #     if created and self.pay_grade:
-    #         self.create_paygrade_components()
-    
-    # def create_paygrade_components(self):
-    #     for pgc in self.pay_grade.paygradecomponent_set.all():
-    #         EmployeeSalaryComponent.objects.get_or_create(
-    #             employee=self,
-    #             component=pgc.component,
-    #             defaults={
-    #                 'amount': pgc.amount,
-    #                 'is_custom': False
-    #             }
-    #         )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
 
 class EmployeeSalaryComponent(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -108,8 +90,29 @@ class EmployeeSalaryComponent(models.Model):
         validators=[validate_positive_amount]
     )
     is_custom = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ('employee', 'component')
 
     def __str__(self):
         return f"{self.employee.first_name}'s {self.component.name}: ₦{self.amount}"
+
+
+class StatutoryDeduction(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    # e.g. 0.08 for 8% (like pension)
+    rate = models.DecimalField(max_digits=5, decimal_places=4)
+
+    # What is this applied on? Gross salary or taxable income?
+    BASE_CHOICES = [
+        ('gross', 'Gross Salary'),
+        ('taxable', 'Taxable Income'),
+    ]
+    base = models.CharField(max_length=10, choices=BASE_CHOICES)
+
+    is_active = models.BooleanField(default=True)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name

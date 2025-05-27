@@ -22,7 +22,7 @@ class PayGrade(TimeStampedModel):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name}" #: ₦{self.amount}"
+        return f"{self.name}"
 
 class PayGradeComponent(models.Model):
     pay_grade = models.ForeignKey(PayGrade, on_delete=models.CASCADE)

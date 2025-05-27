@@ -127,54 +127,43 @@
 </div>
 {% endblock %}
 
-
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const formContainer = document.getElementById('component-forms');
     const addButton = document.getElementById('add-more');
-    const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    const totalForms = document.getElementById('id_components-TOTAL_FORMS');
     
-    // Get the last form in the container
-    const lastForm = document.querySelector('.component-form:last-child');
-    
-    // Clone the last form when "Add Another" is clicked
     addButton.addEventListener('click', function() {
         const formCount = parseInt(totalForms.value);
-        const newForm = lastForm.cloneNode(true);
+        const newForm = formContainer.children[0].cloneNode(true);
         
         // Update all the IDs and names in the cloned form
-        const formRegex = /form-(\d+)-/g;
-        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+        const formRegex = /components-(\d+)-/g;
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `components-${formCount}-`);
         
         // Clear the values
         const inputs = newForm.querySelectorAll('input, select');
         inputs.forEach(input => {
-            if (input.name && input.type !== 'hidden' && !input.name.includes('DELETE')) {
+            if (input.name && !input.name.includes('DELETE') && !input.name.includes('id')) {
                 input.value = '';
-                input.removeAttribute('value');
-                
-                // Clear any existing error messages
-                const errorDiv = input.closest('.component-form').querySelector('.invalid-feedback');
+                // Remove any error classes
+                input.classList.remove('is-invalid');
+                // Remove any error messages
+                const errorDiv = newForm.querySelector('.invalid-feedback');
                 if (errorDiv) {
                     errorDiv.remove();
                 }
-                
-                // Remove is-invalid class if present
-                input.classList.remove('is-invalid');
             }
         });
         
-        // Remove any existing delete checkbox (for new forms)
-        const deleteCheckbox = newForm.querySelector('input[name$="-DELETE"]');
-        if (deleteCheckbox) {
-            deleteCheckbox.closest('.col-md-2').style.display = 'none';
+        // Hide delete checkbox for new forms
+        const deleteDiv = newForm.querySelector('.col-md-2');
+        if (deleteDiv) {
+            deleteDiv.style.display = 'none';
         }
         
-        // Add to the container
         formContainer.appendChild(newForm);
-        
-        // Update the total form count
         totalForms.value = formCount + 1;
     });
 });
