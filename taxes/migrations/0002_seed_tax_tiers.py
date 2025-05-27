@@ -29,15 +29,6 @@ def seed_tax_tiers(apps, schema_editor):
 
 
 
-
-# Default PENCOM setup
-    PensionConfiguration.objects.create(
-        employee_rate=Decimal("8.00"),
-        employer_rate=Decimal("10.00"),
-        effective_date=datetime.date.today(),
-        is_active=True
-    )
-
 class Migration(migrations.Migration):
     dependencies = [
         ('taxes', '0001_initial'),

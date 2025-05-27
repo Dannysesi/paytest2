@@ -66,3 +66,41 @@ class PensionConfiguration(models.Model):
 
     def __str__(self):
         return f"Pension: {self.employee_rate}% EE / {self.employer_rate}% ER (Effective {self.effective_date})"
+
+
+class StatutoryDeduction(models.Model):
+    """Other statutory deductions (NHF, NSITF)"""
+    
+    DEDUCTION_TYPES = [
+        ('NHF', 'National Housing Fund (2.5% of basic)'),
+        ('NSITF', 'Employee Compensation (1% of gross)'),
+    ]
+
+    name = models.CharField(
+        max_length=10,
+        choices=DEDUCTION_TYPES,
+        unique=True
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Statutory Deduction"
+        verbose_name_plural = "Statutory Deductions"
+
+    def __str__(self):
+        return self.get_name_display()
+
+    @property
+    def rate(self):
+        """Returns the fixed rate for each deduction type"""
+        rates = {
+            'NHF': Decimal('2.5'),    # 2.5% of basic
+            'NSITF': Decimal('1.0'),  # 1% of gross
+        }
+        return rates.get(self.name, Decimal('0'))
+
+    @property
+    def calculation_base(self):
+        """Returns what salary component this applies to"""
+        return 'BASIC' if self.name == 'NHF' else 'GROSS'
