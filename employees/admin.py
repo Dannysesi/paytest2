@@ -9,8 +9,7 @@ class EmployeeSalaryComponentInline(admin.TabularInline):
     readonly_fields = ('is_custom',)
     
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(is_custom=True)
+        return super().get_queryset(request)
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
@@ -33,3 +32,4 @@ class EmployeeSalaryComponentAdmin(admin.ModelAdmin):
     list_display = ('employee', 'component', 'amount', 'is_custom')
     list_filter = ('is_custom', 'component__component_type')
     raw_id_fields = ('employee', 'component')
+

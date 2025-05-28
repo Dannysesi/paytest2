@@ -80,3 +80,10 @@ def reset_employees_on_paygrade_delete(sender, instance, **kwargs):
         emp.pay_grade = None
         emp.save(update_fields=["pay_grade"])
         EmployeeSalaryComponent.objects.filter(employee=emp, is_custom=False).delete()
+        
+@receiver(pre_save, sender=EmployeeSalaryComponent)
+def auto_mark_custom(sender, instance, **kwargs):
+    if instance.pk:
+        original = sender.objects.get(pk=instance.pk)
+        if original.amount != instance.amount:
+            instance.is_custom = True
